@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Login - Sebei College Tegres</title>
+    <link rel="stylesheet" href="C:\Users\dell\OneDrive\Desktop\love\style.css">
+    <style>
+        .login-container {
+            display: flex;
+            min-height: calc(100vh - 200px);
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .user-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .user-type-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .user-type-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .user-type-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .demo-credentials {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .demo-credentials p {
+            margin: 5px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🎓 Sebei College Tegres</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="staff.html">Staff</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="portal-login.html" class="portal-btn active">Portal</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Container -->
+    <section class="login-container">
+        <div class="login-box">
+            <h2>🔐 Portal Login</h2>
+            <p>Select your user type and login</p>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMsg"></div>
+
+            <!-- User Type Selector -->
+            <div class="user-type-selector">
+                <button class="user-type-btn active" onclick="selectUserType('student')">👨‍🎓 Student</button>
+                <button class="user-type-btn" onclick="selectUserType('parent')">👨‍👩‍👧 Parent</button>
+                <button class="user-type-btn" onclick="selectUserType('admin')">👨‍💼 Admin</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username / Email</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Login to Portal</button>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div class="demo-credentials">
+                <p><strong>Valid Credentials:</strong></p>
+                <p>👨‍💼 Admin Only:</p>
+                <p style="margin-left: 10px;">Username: <strong>admin@sebei.edu</strong></p>
+                <p style="margin-left: 10px;">Password: <strong>sebei</strong></p>
+                <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                <p style="color: #999; font-style: italic;">Note: Student and Parent portals are currently available for viewing. Use Admin credentials for full access.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p>📞 Phone: (555) 123-4567</p>
+                    <p>📧 Email: info@sebei.edu</p>
+                    <p>📍 Address: Tegres, Kapchorwa, Uganda</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">Admissions</a></li>
+                        <li><a href="#">Calendar</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <ul>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Sebei College Tegres. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let selectedUserType = 'student';
+
+        function selectUserType(type) {
+            selectedUserType = type;
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            // Admin credentials
+            if (selectedUserType === 'admin') {
+                if (username === 'admin@sebei.edu' && password === 'sebei') {
+                    sessionStorage.setItem('userType', 'admin');
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    window.location.href = 'portal-admin.html';
+                } else {
+                    errorMsg.textContent = 'Invalid admin credentials. Use admin@sebei.edu / sebei';
+                    errorMsg.style.display = 'block';
+                }
+            } else if (selectedUserType === 'student') {
+                // Allow students to view portal without password
+                sessionStorage.setItem('userType', 'student');
+                sessionStorage.setItem('username', username);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                window.location.href = 'portal-student.html';
+            } else if (selectedUserType === 'parent') {
+                // Allow parents to view portal without password
+                sessionStorage.setItem('userType', 'parent');
+                sessionStorage.setItem('username', username);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                window.location.href = 'portal-parent.html';
+            }
+        }
+    </script>
+</body>
+</html>

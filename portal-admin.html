@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sebei College Tegres</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ... (keep existing styles) ... */
+        .db-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .db-stat-card {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .db-stat-card h4 {
+            color: #c41e3a;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .db-stat-card p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .search-box {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 200px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <!-- Portal Header -->
+    <div class="portal-header">
+        <h1>👨‍💼 Admin Dashboard - Sebei College Tegres</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Portal Container -->
+    <div class="portal-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" onclick="showSection('dashboard')" class="active">📊 Dashboard</a></li>
+                <li><a href="#" onclick="showSection('register-student')">➕ Register Student</a></li>
+                <li><a href="#" onclick="showSection('students')">👨‍🎓 Students</a></li>
+                <li><a href="#" onclick="showSection('fees')">💳 Manage Fees</a></li>
+                <li><a href="#" onclick="showSection('staff')">👨‍🏫 Staff</a></li>
+                <li><a href="#" onclick="showSection('attendance')">📋 Attendance</a></li>
+                <li><a href="#" onclick="showSection('grades')">📈 Grades</a></li>
+                <li><a href="#" onclick="showSection('announcements')">📢 Announcements</a></li>
+                <li><a href="#" onclick="showSection('reports')">📊 Reports</a></li>
+                <li><a href="#" onclick="showSection('settings')">⚙️ Settings</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <h2>Admin Dashboard Overview</h2>
+                <p style="color: #666; margin-bottom: 20px;">System overview and key metrics for Sebei College Tegres.</p>
+                
+                <div class="db-stats" id="dbStats">
+                    <div class="db-stat-card">
+                        <h4 id="totalStudents">0</h4>
+                        <p>Total Students</p>
+                    </div>
+                    <div class="db-stat-card">
+                        <h4 id="totalStaff">0</h4>
+                        <p>Total Staff</p>
+                    </div>
+                    <div class="db-stat-card">
+                        <h4 id="totalFees">0</h4>
+                        <p>Fees Collected (UGX)</p>
+                    </div>
+                    <div class="db-stat-card">
+                        <h4 id="pendingFees">0</h4>
+                        <p>Pending Payments</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>👨‍🎓 Students</h3>
+                        <p style="font-size: 2rem; color: #c41e3a; font-weight: bold;" id="studentCount">0</p>
+                        <p>Active enrolled students</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>👨‍🏫 Staff</h3>
+                        <p style="font-size: 2rem; color: #c41e3a; font-weight: bold;" id="staffCount">0</p>
+                        <p>Faculty and support staff</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>📚 Classes</h3>
+                        <p style="font-size: 2rem; color: #c41e3a; font-weight: bold;">45</p>
+                        <p>Active class sections</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>💳 Fees Collected</h3>
+                        <p style="font-size: 2rem; color: #c41e3a; font-weight: bold;" id="totalFeesDisplay">UGX 0</p>
+                        <p>This academic year</p>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <button class="action-btn" onclick="showSection('register-student')" style="padding: 15px; font-size: 1rem;">➕ Register New Student</button>
+                    <button class="action-btn" onclick="showSection('fees')" style="padding: 15px; font-size: 1rem;">💳 Edit School Fees</button>
+                    <button class="action-btn" onclick="showSection('announcements')" style="padding: 15px; font-size: 1rem;">📢 Post Announcement</button>
+                    <button class="action-btn" onclick="exportData()" style="padding: 15px; font-size: 1rem;">💾 Export Data</button>
+                </div>
+            </div>
+
+            <!-- Register Student Section -->
+            <div id="register-student" class="content-section">
+                <h2>Register New Student</h2>
+                <div class="dashboard-card">
+                    <div id="successMsg" class="success-message" style="display: none;">
+                        ✓ Student registered successfully!
+                    </div>
+                    <form onsubmit="registerStudent(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dob">Date of Birth *</label>
+                                <input type="date" id="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender *</label>
+                                <select id="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="class">Class Level *</label>
+                                <select id="class" required>
+                                    <option value="">Select Class</option>
+                                    <option value="S1">Senior 1 (S1)</option>
+                                    <option value="S2">Senior 2 (S2)</option>
+                                    <option value="S3">Senior 3 (S3)</option>
+                                    <option value="S4">Senior 4 (S4)</option>
+                                    <option value="S5">Senior 5 (S5)</option>
+                                    <option value="S6">Senior 6 (S6)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="section">Class Section *</label>
+                                <select id="section" required>
+                                    <option value="">Select Section</option>
+                                    <option value="A">Section A</option>
+                                    <option value="B">Section B</option>
+                                    <option value="C">Section C</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="parentName">Parent/Guardian Name *</label>
+                            <input type="text" id="parentName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="parentPhone">Parent Phone *</label>
+                            <input type="tel" id="parentPhone" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="action-btn" style="padding: 12px 30px; font-size: 1rem;">✓ Register Student</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Students Section -->
+            <div id="students" class="content-section">
+                <h2>Student Management</h2>
+                <div class="search-box">
+                    <input type="text" id="searchStudent" placeholder="Search by name, email, or ID..." onkeyup="filterStudents()">
+                    <select id="filterClass" onchange="filterStudents()">
+                        <option value="">All Classes</option>
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                        <option value="S4">S4</option>
+                        <option value="S5">S5</option>
+                        <option value="S6">S6</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Parent</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Students will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Fees Management Section -->
+            <div id="fees" class="content-section">
+                <h2>School Fees Management</h2>
+                <p style="color: #666; margin-bottom: 20px;">Edit and manage school fees for different levels, terms, and currencies.</p>
+
+                <h3 class="section-title">Edit School Fees</h3>
+                <div class="dashboard-card">
+                    <form onsubmit="updateFees(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeLevel">Class Level *</label>
+                                <select id="gradeLevel" required>
+                                    <option value="">Select Class</option>
+                                    <option value="S1">Senior 1 (S1)</option>
+                                    <option value="S2">Senior 2 (S2)</option>
+                                    <option value="S3">Senior 3 (S3)</option>
+                                    <option value="S4">Senior 4 (S4)</option>
+                                    <option value="S5">Senior 5 (S5)</option>
+                                    <option value="S6">Senior 6 (S6)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="feeType">Fee Type *</label>
+                                <select id="feeType" required>
+                                    <option value="">Select Fee Type</option>
+                                    <option value="tuition">Tuition Fee</option>
+                                    <option value="activity">Activity Fee</option>
+                                    <option value="technology">Technology Fee</option>
+                                    <option value="library">Library Fee</option>
+                                    <option value="uniform">Uniform & Books</option>
+                                    <option value="exam">Examination Fee</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="term">Term *</label>
+                                <select id="term" required>
+                                    <option value="">Select Term</option>
+                                    <option value="1">Term 1 (Jan-Apr)</option>
+                                    <option value="2">Term 2 (May-Aug)</option>
+                                    <option value="3">Term 3 (Sep-Dec)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Currency *</label>
+                                <select id="currency" required>
+                                    <option value="">Select Currency</option>
+                                    <option value="UGX">UGX (Uganda Shilling)</option>
+                                    <option value="USD">USD (US Dollar)</option>
+                                    <option value="EUR">EUR (Euro)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Amount *</label>
+                                <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dueDate">Due Date *</label>
+                                <input type="date" id="dueDate" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="action-btn" style="padding: 12px 30px; font-size: 1rem;">✓ Update Fee</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Current Fee Structure</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class Level</th>
+                                <th>Fee Type</th>
+                                <th>Term</th>
+                                <th>Amount</th>
+                                <th>Currency</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feeTableBody">
+                            <!-- Fees will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Staff Section -->
+            <div id="staff" class="content-section">
+                <h2>Staff Management</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <!-- Staff will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attendance Section -->
+            <div id="attendance" class="content-section">
+                <h2>Attendance Management</h2>
+                <div class="dashboard-card" style="margin-bottom: 20px;">
+                    <h3>Today's Attendance Summary</h3>
+                    <div id="attendanceSummary">
+                        <p><strong>Total Students:</strong> <span id="attTotal">0</span></p>
+                        <p><strong>Present:</strong> <span id="attPresent">0</span> (<span id="attPercent">0</span>%)</p>
+                        <p><strong>Absent:</strong> <span id="attAbsent">0</span> (<span id="attAbsentPercent">0</span>%)</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Class</th>
+                                <th>Total</th>
+                                <th>Present</th>
+                                <th>Absent</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <!-- Attendance will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Grades Section -->
+            <div id="grades" class="content-section">
+                <h2>Grade Management</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Mid-Term</th>
+                                <th>Final</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesTableBody">
+                            <!-- Grades will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Announcements Section -->
+            <div id="announcements" class="content-section">
+                <h2>Post Announcement</h2>
+                <div class="dashboard-card">
+                    <form onsubmit="postAnnouncement(event)">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" placeholder="Announcement title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option>Academic</option>
+                                <option>Event</option>
+                                <option>Holiday</option>
+                                <option>General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="6" placeholder="Write your announcement..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="audience">Recipient</label>
+                            <select id="audience" required>
+                                <option>All Users</option>
+                                <option>Students Only</option>
+                                <option>Parents Only</option>
+                                <option>Staff Only</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="action-btn" style="padding: 12px 30px;">Post Announcement</button>
+                    </form>
+                </div>
+                <h3 class="section-title">Recent Announcements</h3>
+                <div id="announcementsList">
+                    <!-- Announcements will be populated here -->
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports" class="content-section">
+                <h2>Generate Reports</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="generateReport('students')">
+                        <h3>📊 Student Report</h3>
+                        <p>Generate comprehensive student data report</p>
+                        <button class="action-btn">Generate</button>
+                    </div>
+                    <div class="dashboard-card" onclick="generateReport('academic')">
+                        <h3>📈 Academic Report</h3>
+                        <p>Generate grades and performance report</p>
+                        <button class="action-btn">Generate</button>
+                    </div>
+                    <div class="dashboard-card" onclick="generateReport('financial')">
+                        <h3>💳 Financial Report</h3>
+                        <p>Generate fees and revenue report</p>
+                        <button class="action-btn">Generate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <h2>System Settings</h2>
+                <div class="dashboard-card">
+                    <h3>General Settings</h3>
+                    <div class="form-group">
+                        <label>School Name</label>
+                        <input type="text" value="Sebei College Tegres" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" value="Tegres, Kapchorwa, Uganda" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Academic Year</label>
+                        <input type="text" value="2025-2026" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>School Email</label>
+                        <input type="email" value="info@sebei.edu">
+                    </div>
+                    <button class="action-btn" onclick="alert('Settings saved!')">Save Changes</button>
+                    <button class="action-btn" onclick="resetDatabase()" style="background: #dc3545; margin-left: 10px;">🗑️ Reset Database</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DATABASE CLASS - localStorage based
+        // ============================================================
+        class Database {
+            constructor() {
+                this.dbName = 'sebeiCollegeDB';
+                this.init();
+            }
+
+            init() {
+                if (!localStorage.getItem(this.dbName)) {
+                    const initialData = {
+                        students: [
+                            {
+                                id: 'SCT-2026-001',
+                                firstName: 'John',
+                                lastName: 'Smith',
+                                email: 'john@sebei.edu',
+                                phone: '(555) 987-6543',
+                                dob: '2008-01-15',
+                                gender: 'Male',
+                                class: 'S5',
+                                section: 'A',
+                                parentName: 'Robert Smith',
+                                parentPhone: '(555) 456-7890',
+                                address: '456 Edu St, Tegres',
+                                status: 'Active',
+                                registeredDate: '2026-01-10'
+                            },
+                            {
+                                id: 'SCT-2026-002',
+                                firstName: 'Sarah',
+                                lastName: 'Smith',
+                                email: 'sarah@sebei.edu',
+                                phone: '(555) 987-6544',
+                                dob: '2010-06-20',
+                                gender: 'Female',
+                                class: 'S3',
+                                section: 'B',
+                                parentName: 'Robert Smith',
+                                parentPhone: '(555) 456-7890',
+                                address: '456 Edu St, Tegres',
+                                status: 'Active',
+                                registeredDate: '2026-01-10'
+                            },
+                            {
+                                id: 'SCT-2026-003',
+                                firstName: 'David',
+                                lastName: 'Mwangi',
+                                email: 'david@sebei.edu',
+                                phone: '(555) 234-5678',
+                                dob: '2009-03-12',
+                                gender: 'Male',
+                                class: 'S4',
+                                section: 'A',
+                                parentName: 'Peter Mwangi',
+                                parentPhone: '(555) 345-6789',
+                                address: '789 School Rd, Tegres',
+                                status: 'Active',
+                                registeredDate: '2026-01-15'
+                            }
+                        ],
+                        staff: [
+                            {
+                                id: 'SF-001',
+                                name: 'Dr. Sarah Johnson',
+                                position: 'Principal',
+                                department: 'Administration',
+                                email: 'sarah@sebei.edu'
+                            },
+                            {
+                                id: 'SF-002',
+                                name: 'Mr. James Chen',
+                                position: 'Vice Principal - Academic',
+                                department: 'Administration',
+                                email: 'james@sebei.edu'
+                            },
+                            {
+                                id: 'SF-003',
+                                name: 'Prof. Robert Taylor',
+                                position: 'Senior Lecturer',
+                                department: 'Mathematics',
+                                email: 'robert@sebei.edu'
+                            }
+                        ],
+                        fees: [
+                            {
+                                id: 1,
+                                classLevel: 'S1-S4',
+                                feeType: 'tuition',
+                                term: 1,
+                                amount: 3000000,
+                                currency: 'UGX',
+                                dueDate: '2026-01-31'
+                            },
+                            {
+                                id: 2,
+                                classLevel: 'S5-S6',
+                                feeType: 'tuition',
+                                term: 1,
+                                amount: 3500000,
+                                currency: 'UGX',
+                                dueDate: '2026-01-31'
+                            },
+                            {
+                                id: 3,
+                                classLevel: 'All Classes',
+                                feeType: 'activity',
+                                term: 1,
+                                amount: 500000,
+                                currency: 'UGX',
+                                dueDate: '2026-01-31'
+                            }
+                        ],
+                        grades: [
+                            {
+                                studentId: 'SCT-2026-001',
+                                course: 'Mathematics',
+                                instructor: 'Prof. Robert Taylor',
+                                midTerm: 88,
+                                final: 92,
+                                grade: 'A'
+                            },
+                            {
+                                studentId: 'SCT-2026-001',
+                                course: 'Physics',
+                                instructor: 'Dr. Michael Patel',
+                                midTerm: 85,
+                                final: 89,
+                                grade: 'A'
+                            },
+                            {
+                                studentId: 'SCT-2026-002',
+                                course: 'English Literature',
+                                instructor: 'Prof. David Anderson',
+                                midTerm: 90,
+                                final: 94,
+                                grade: 'A+'
+                            }
+                        ],
+                        attendance: [
+                            {
+                                date: '2026-06-12',
+                                class: 'S5-A',
+                                total: 35,
+                                present: 33,
+                                absent: 2,
+                                percentage: 94.3
+                            },
+                            {
+                                date: '2026-06-12',
+                                class: 'S3-B',
+                                total: 30,
+                                present: 28,
+                                absent: 2,
+                                percentage: 93.3
+                            }
+                        ],
+                        announcements: [
+                            {
+                                id: 1,
+                                title: 'School Opens Registration',
+                                category: 'Academic',
+                                message: 'Classes for 2026-2027 academic year are now open for registration.',
+                                audience: 'All Users',
+                                date: '2026-06-01'
+                            },
+                            {
+                                id: 2,
+                                title: 'Science Fair Winners',
+                                category: 'Event',
+                                message: 'Congratulations to our talented students who won the regional science fair.',
+                                audience: 'All Users',
+                                date: '2026-05-28'
+                            }
+                        ],
+                        nextStudentId: 4,
+                        nextFeeId: 4,
+                        nextAnnouncementId: 3
+                    };
+                    localStorage.setItem(this.dbName, JSON.stringify(initialData));
+                }
+            }
+
+            getData() {
+                return JSON.parse(localStorage.getItem(this.dbName));
+            }
+
+            saveData(data) {
+                localStorage.setItem(this.dbName, JSON.stringify(data));
+            }
+
+            // Students
+            getStudents() {
+                return this.getData().students;
+            }
+
+            addStudent(student) {
+                const data = this.getData();
+                student.id = `SCT-2026-${String(data.nextStudentId).padStart(3, '0')}`;
+                student.status = 'Active';
+                student.registeredDate = new Date().toISOString().split('T')[0];
+                data.students.push(student);
+                data.nextStudentId++;
+                this.saveData(data);
+                return student;
+            }
+
+            getStudentById(id) {
+                return this.getData().students.find(s => s.id === id);
+            }
+
+            updateStudent(id, updatedData) {
+                const data = this.getData();
+                const index = data.students.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    data.students[index] = { ...data.students[index], ...updatedData };
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            }
+
+            deleteStudent(id) {
+                const data = this.getData();
+                data.students = data.students.filter(s => s.id !== id);
+                this.saveData(data);
+                return true;
+            }
+
+            // Staff
+            getStaff() {
+                return this.getData().staff;
+            }
+
+            addStaff(staff) {
+                const data = this.getData();
+                staff.id = `SF-${String(data.staff.length + 1).padStart(3, '0')}`;
+                data.staff.push(staff);
+                this.saveData(data);
+                return staff;
+            }
+
+            // Fees
+            getFees() {
+                return this.getData().fees;
+            }
+
+            addFee(fee) {
+                const data = this.getData();
+                fee.id = data.nextFeeId++;
+                data.fees.push(fee);
+                this.saveData(data);
+                return fee;
+            }
+
+            updateFee(id, updatedData) {
+                const data = this.getData();
+                const index = data.fees.findIndex(f => f.id === id);
+                if (index !== -1) {
+                    data.fees[index] = { ...data.fees[index], ...updatedData };
+                    this.saveData(data);
+                    return true;
+                }
+                return false;
+            }
+
+            deleteFee(id) {
+                const data = this.getData();
+                data.fees = data.fees.filter(f => f.id !== id);
+                this.saveData(data);
+                return true;
+            }
+
+            // Grades
+            getGrades() {
+                return this.getData().grades;
+            }
+
+            addGrade(grade) {
+                const data = this.getData();
+                data.grades.push(grade);
+                this.saveData(data);
+                return grade;
+            }
+
+            // Attendance
+            getAttendance() {
+                return this.getData().attendance;
+            }
+
+            addAttendance(record) {
+                const data = this.getData();
+                data.attendance.push(record);
+                this.saveData(data);
+                return record;
+            }
+
+            // Announcements
+            getAnnouncements() {
+                return this.getData().announcements;
+            }
+
+            addAnnouncement(announcement) {
+                const data = this.getData();
+                announcement.id = data.nextAnnouncementId++;
+                announcement.date = new Date().toISOString().split('T')[0];
+                data.announcements.unshift(announcement);
+                this.saveData(data);
+                return announcement;
+            }
+
+            deleteAnnouncement(id) {
+                const data = this.getData();
+                data.announcements = data.announcements.filter(a => a.id !== id);
+                this.saveData(data);
+                return true;
+            }
+
+            // Stats
+            getStats() {
+                const data = this.getData();
+                const students = data.students;
+                const fees = data.fees;
+                const totalFees = fees.reduce((sum, f) => sum + f.amount, 0);
+                const totalStudents = students.length;
+                const activeStudents = students.filter(s => s.status === 'Active').length;
+                
+                return {
+                    totalStudents: totalStudents,
+                    activeStudents: activeStudents,
+                    totalStaff: data.staff.length,
+                    totalFees: totalFees,
+                    pendingFees: students.filter(s => s.status === 'Pending').length
+                };
+            }
+
+            // Reset database
+            reset() {
+                localStorage.removeItem(this.dbName);
+                this.init();
+            }
+
+            // Export data as JSON
+            exportData() {
+                return JSON.stringify(this.getData(), null, 2);
+            }
+
+            // Import data from JSON
+            importData(jsonData) {
+                try {
+                    const data = JSON.parse(jsonData);
+                    localStorage.setItem(this.dbName, JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+        }
+
+        // ============================================================
+        // Initialize Database
+        // ============================================================
+        const db = new Database();
+
+        // ============================================================
+        // UI Functions
+        // ============================================================
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Refresh data when switching sections
+            if (sectionId === 'dashboard') updateDashboard();
+            if (sectionId === 'students') renderStudents();
+            if (sectionId === 'staff') renderStaff();
+            if (sectionId === 'fees') renderFees();
+            if (sectionId === 'attendance') renderAttendance();
+            if (sectionId === 'grades') renderGrades();
+            if (sectionId === 'announcements') renderAnnouncements();
+        }
+
+        // ============================================================
+        // Dashboard
+        // ============================================================
+        function updateDashboard() {
+            const stats = db.getStats();
+            document.getElementById('totalStudents').textContent = stats.totalStudents;
+            document.getElementById('totalStaff').textContent = stats.totalStaff;
+            document.getElementById('totalFees').textContent = stats.totalFees.toLocaleString();
+            document.getElementById('pendingFees').textContent = stats.pendingFees;
+            document.getElementById('studentCount').textContent = stats.activeStudents;
+            document.getElementById('staffCount').textContent = stats.totalStaff;
+            document.getElementById('totalFeesDisplay').textContent = `UGX ${stats.totalFees.toLocaleString()}`;
+        }
+
+        // ============================================================
+        // Student Registration
+        // ============================================================
+        function registerStudent(event) {
+            event.preventDefault();
+            
+            const student = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value || 'N/A',
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                class: document.getElementById('class').value,
+                section: document.getElementById('section').value,
+                parentName: document.getElementById('parentName').value,
+                parentPhone: document.getElementById('parentPhone').value,
+                address: document.getElementById('address').value || 'N/A'
+            };
+
+            const newStudent = db.addStudent(student);
+            
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = `✓ Student ${newStudent.firstName} ${newStudent.lastName} (${newStudent.id}) registered successfully!`;
+            successMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('dob').value = '';
+                document.getElementById('gender').value = '';
+                document.getElementById('class').value = '';
+                document.getElementById('section').value = '';
+                document.getElementById('parentName').value = '';
+                document.getElementById('parentPhone').value = '';
+                document.getElementById('address').value = '';
+            }, 3000);
+            
+            updateDashboard();
+        }
+
+        // ============================================================
+        // Students List with Search & Filter
+        // ============================================================
+        function renderStudents() {
+            const students = db.getStudents();
+            const tbody = document.getElementById('studentsTableBody');
+            const searchTerm = document.getElementById('searchStudent')?.value?.toLowerCase() || '';
+            const filterClass = document.getElementById('filterClass')?.value || '';
+            
+            let filtered = students;
+            if (searchTerm) {
+                filtered = filtered.filter(s => 
+                    s.firstName.toLowerCase().includes(searchTerm) ||
+                    s.lastName.toLowerCase().includes(searchTerm) ||
+                    s.email.toLowerCase().includes(searchTerm) ||
+                    s.id.toLowerCase().includes(searchTerm)
+                );
+            }
+            if (filterClass) {
+                filtered = filtered.filter(s => s.class === filterClass);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #999;">No students found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td><strong>${s.id}</strong></td>
+                    <td>${s.firstName} ${s.lastName}</td>
+                    <td>${s.class}</td>
+                    <td>${s.section}</td>
+                    <td>${s.parentName}</td>
+                    <td><span class="status-badge status-${s.status.toLowerCase()}">${s.status}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editStudent('${s.id}')">✏️ Edit</button>
+                        <button class="action-btn" onclick="deleteStudent('${s.id}')" style="background: #dc3545;">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStudents() {
+            renderStudents();
+        }
+
+        function editStudent(id) {
+            const student = db.getStudentById(id);
+            if (!student) return;
+            
+            const newName = prompt('Enter new full name:', `${student.firstName} ${student.lastName}`);
+            if (newName) {
+                const parts = newName.split(' ');
+                const firstName = parts[0];
+                const lastName = parts.slice(1).join(' ') || '';
+                db.updateStudent(id, { firstName, lastName });
+                renderStudents();
+                updateDashboard();
+            }
+        }
+
+        function deleteStudent(id) {
+            if (confirm(`Are you sure you want to delete student ${id}?`)) {
+                db.deleteStudent(id);
+                renderStudents();
+                updateDashboard();
+            }
+        }
+
+        // ============================================================
+        // Staff
+        // ============================================================
+        function renderStaff() {
+            const staff = db.getStaff();
+            const tbody = document.getElementById('staffTableBody');
+            
+            if (staff.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #999;">No staff members</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = staff.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${s.position}</td>
+                    <td>${s.department}</td>
+                    <td>${s.email}</td>
+                    <td><button class="action-btn" onclick="alert('Edit staff: ${s.name}')">✏️ Edit</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================================
+        // Fees
+        // ============================================================
+        function renderFees() {
+            const fees = db.getFees();
+            const tbody = document.getElementById('feeTableBody');
+            
+            if (fees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #999;">No fees configured</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = fees.map(f => `
+                <tr>
+                    <td>${f.classLevel}</td>
+                    <td>${f.feeType}</td>
+                    <td>Term ${f.term}</td>
+                    <td>${f.amount.toLocaleString()}</td>
+                    <td>${f.currency}</td>
+                    <td>${f.dueDate}</td>
+                    <td>
+                        <button class="action-btn" onclick="editFee(${f.id})">✏️ Edit</button>
+                        <button class="action-btn" onclick="deleteFee(${f.id})" style="background: #dc3545;">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateFees(event) {
+            event.preventDefault();
+            
+            const fee = {
+                classLevel: document.getElementById('gradeLevel').value,
+                feeType: document.getElementById('feeType').value,
+                term: parseInt(document.getElementById('term').value),
+                amount: parseFloat(document.getElementById('amount').value),
+                currency: document.getElementById('currency').value,
+                dueDate: document.getElementById('dueDate').value
+            };
+
+            db.addFee(fee);
+            renderFees();
+            updateDashboard();
+            
+            alert('Fee structure updated successfully!');
+            event.target.reset();
+        }
+
+        function editFee(id) {
+            const fee = db.getFees().find(f => f.id === id);
+            if (!fee) return;
+            
+            const newAmount = prompt('Enter new amount:', fee.amount);
+            if (newAmount !== null) {
+                db.updateFee(id, { amount: parseFloat(newAmount) });
+                renderFees();
+                updateDashboard();
+            }
+        }
+
+        function deleteFee(id) {
+            if (confirm('Delete this fee record?')) {
+                db.deleteFee(id);
+                renderFees();
+                updateDashboard();
+            }
+        }
+
+        // ============================================================
+        // Attendance
+        // ============================================================
+        function renderAttendance() {
+            const attendance = db.getAttendance();
+            const tbody = document.getElementById('attendanceTableBody');
+            
+            const total = db.getStudents().length;
+            const present = Math.floor(total * 0.94);
+            const absent = total - present;
+            
+            document.getElementById('attTotal').textContent = total;
+            document.getElementById('attPresent').textContent = present;
+            document.getElementById('attPercent').textContent = ((present/total)*100).toFixed(1);
+            document.getElementById('attAbsent').textContent = absent;
+            document.getElementById('attAbsentPercent').textContent = ((absent/total)*100).toFixed(1);
+
+            if (attendance.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #999;">No attendance records</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = attendance.map(a => `
+                <tr>
+                    <td>${a.date}</td>
+                    <td>${a.class}</td>
+                    <td>${a.total}</td>
+                    <td>${a.present}</td>
+                    <td>${a.absent}</td>
+                    <td>${a.percentage}%</td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================================
+        // Grades
+        // ============================================================
+        function renderGrades() {
+            const grades = db.getGrades();
+            const tbody = document.getElementById('gradesTableBody');
+            
+            if (grades.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #999;">No grades recorded</td></tr>`;
+                return;
+            }
+
+            const students = db.getStudents();
+            tbody.innerHTML = grades.map(g => {
+                const student = students.find(s => s.id === g.studentId);
+                const name = student ? `${student.firstName} ${student.lastName}` : g.studentId;
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${g.course}</td>
+                        <td>${g.midTerm}%</td>
+                        <td>${g.final}%</td>
+                        <td><span class="status-badge status-active">${g.grade}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // Announcements
+        // ============================================================
+        function renderAnnouncements() {
+            const announcements = db.getAnnouncements();
+            const container = document.getElementById('announcementsList');
+            
+            if (announcements.length === 0) {
+                container.innerHTML = '<p style="color: #999;">No announcements yet.</p>';
+                return;
+            }
+
+            container.innerHTML = announcements.map(a => `
+                <div class="dashboard-card" style="margin-bottom: 15px;">
+                    <h4 style="margin:0; color: #c41e3a;">${a.title}</h4>
+                    <p style="margin: 5px 0; color: #666;"><strong>Category:</strong> ${a.category} | <strong>Audience:</strong> ${a.audience} | <strong>Date:</strong> ${a.date}</p>
+                    <p>${a.message}</p>
+                    <button class="action-btn" onclick="deleteAnnouncement(${a.id})" style="background: #dc3545; padding: 5px 15px;">🗑️ Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function postAnnouncement(event) {
+            event.preventDefault();
+            
+            const announcement = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                message: document.getElementById('message').value,
+                audience: document.getElementById('audience').value
+            };
+
+            db.addAnnouncement(announcement);
+            renderAnnouncements();
+            
+            alert('Announcement posted successfully!');
+            event.target.reset();
+        }
+
+        function deleteAnnouncement(id) {
+            if (confirm('Delete this announcement?')) {
+                db.deleteAnnouncement(id);
+                renderAnnouncements();
+            }
+        }
+
+        // ============================================================
+        // Reports
+        // ============================================================
+        function generateReport(type) {
+            const data = db.getData();
+            let report = '';
+            
+            switch(type) {
+                case 'students':
+                    report = JSON.stringify(data.students, null, 2);
+                    break;
+                case 'academic':
+                    report = JSON.stringify(data.grades, null, 2);
+                    break;
+                case 'financial':
+                    report = JSON.stringify({
+                        fees: data.fees,
+                        totalCollected: data.fees.reduce((sum, f) => sum + f.amount, 0)
+                    }, null, 2);
+                    break;
+                default:
+                    report = JSON.stringify(data, null, 2);
+            }
+            
+            // Download as file
+            const blob = new Blob([report], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${type}_report_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} report generated and downloaded!`);
+        }
+
+        // ============================================================
+        // Export / Reset
+        // ============================================================
+        function exportData() {
+            const data = db.exportData();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sebei_college_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('Data exported successfully!');
+        }
+
+        function resetDatabase() {
+            if (confirm('⚠️ WARNING: This will delete ALL data. Are you sure?')) {
+                if (confirm('Final confirmation: Reset database?')) {
+                    db.reset();
+                    updateDashboard();
+                    renderStudents();
+                    renderStaff();
+                    renderFees();
+                    renderAttendance();
+                    renderGrades();
+                    renderAnnouncements();
+                    alert('Database has been reset to default data.');
+                }
+            }
+        }
+
+        // ============================================================
+        // Logout
+        // ============================================================
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'portal-login.html';
+        }
+
+        // ============================================================
+        // Check authentication
+        // ============================================================
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('userType') !== 'admin') {
+            window.location.href = 'portal-login.html';
+        }
+
+        // ============================================================
+        // Initialize on load
+        // ============================================================
+        window.onload = function() {
+            updateDashboard();
+            renderStudents();
+            renderStaff();
+            renderFees();
+            renderAttendance();
+            renderGrades();
+            renderAnnouncements();
+        };
+    </script>
+</body>
+</html>
